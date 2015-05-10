@@ -21,6 +21,7 @@ void solveMaze(Maze maze) {
   
   initPqueue(&fringe);
   pushPqueue(&fringe, state);
+    pushCount++;
     
   while (!isEmptyPqueue(fringe) && !isSolved(maze)) {
     topPqueue(fringe, &state);
@@ -78,6 +79,7 @@ void solveMazeBFS(Maze maze) {
     
     initPqueue(&fringe);
     pushPqueue(&fringe, state);
+    pushCount++;
     
     while (!isEmptyPqueue(fringe) && !isSolved(maze)) {
         topPqueue(fringe, &state);
@@ -136,6 +138,7 @@ void solveMazeDFS(Maze maze) {
     
     initPqueue(&fringe);
     pushPqueue(&fringe, state);
+    pushCount++;
     
     while (!isEmptyPqueue(fringe) && !isSolved(maze)) {
         topPqueue(fringe, &state);
@@ -197,6 +200,7 @@ void solveMazeIDA(Maze maze) {
         setStatePriority(&state, priority);
         initPqueue(&fringe);
         pushPqueue(&fringe, state);
+        pushCount++;
         //printf(" \n\n\n");
         //printf("%d \t", depth);
         while (!isEmptyPqueue(fringe) && !isSolved(maze)) {
@@ -204,7 +208,7 @@ void solveMazeIDA(Maze maze) {
             popPqueue(&fringe);
             visitCount++;
             setMazeState(&maze, state);
-            printState(state);
+            //printState(state);
             //printf("%d ",getStatePriority(state));
             x = getStatePriority(state);
             //printf(" %d \t", x);
@@ -258,6 +262,7 @@ void solveMazeAStar(Maze maze) {
     
     initPqueue(&fringe);
     pushPqueue(&fringe, state);
+    pushCount++;
     
     while (!isEmptyPqueue(fringe) && !isSolved(maze)) {
         topPqueue(fringe, &state);
@@ -327,7 +332,7 @@ int main(int argc, char *argv[]) {
 
   printMaze(maze);
 
-  solveMazeBFS(maze);
+  solveMazeIDA(maze);
   
   return EXIT_SUCCESS;
 }
