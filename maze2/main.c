@@ -146,7 +146,7 @@ void solveMazeDFS(Maze maze) {
         visitCount++;
         setMazeState(&maze, state);
         printState(state);
-        for (i=0; i<6; i++) {
+        for (i=5; i>=0; i--) {
             if (canMoveTo(maze, dir[i])) {
                 /* make move in direction dir[i] */
                 makeMove(&maze, dir[i]);
@@ -186,34 +186,31 @@ void solveMazeIDA(Maze maze) {
     Direction dir[6]={UP, DOWN, NORTH, EAST, SOUTH, WEST};
     Pqueue fringe;
     Position pos, goal;
-    State state, successor;
-    int i, priority=0, visitCount = 0, pushCount = 0, x, depth=0;
+    State state, successor, first;
+    int i, visitCount = 0, pushCount = 0, x, depth=0;
     
     getPosition(maze, &pos);
     getGoal(maze, &goal);
+    getMazeState(&first, maze);
+    setStatePriority(&first, 0);
     
     
     while(!isSolved(maze)){
         depth++;
         x=0;
-        getMazeState(&state, maze);
-        setStatePriority(&state, priority);
         initPqueue(&fringe);
-        pushPqueue(&fringe, state);
+        pushPqueue(&fringe, first);
         pushCount++;
-        //printf(" \n\n\n");
-        //printf("%d \t", depth);
         while (!isEmptyPqueue(fringe) && !isSolved(maze)) {
             topPqueue(fringe, &state);
             popPqueue(&fringe);
+            if(getStateCost(state) > depth){
+                continue;}
             visitCount++;
             setMazeState(&maze, state);
-            //printState(state);
-            //printf("%d ",getStatePriority(state));
-            x = getStatePriority(state);
-            //printf(" %d \t", x);
-            for (i=0; i<6; i++) {
-                if (canMoveTo(maze, dir[i]) && (getStatePriority(state)<depth)) {
+            printState(state);
+            for (i=5; i>=0; i--) {
+                if (canMoveTo(maze, dir[i])) {
                     /* make move in direction dir[i] */
                     makeMove(&maze, dir[i]);
                     /* show result */
@@ -228,7 +225,8 @@ void solveMazeIDA(Maze maze) {
                     //printState(successor);
 #endif
                     /* set priority of successor an put it in the fringe */
-                    setStatePriority(&successor, x+1);
+                    x++;
+                    setStatePriority(&successor, x);
                     pushPqueue(&fringe, successor);
                     pushCount++;
                     /* undo move */
@@ -246,6 +244,15 @@ void solveMazeIDA(Maze maze) {
     printf("Number of nodes visited: %d Number of nodes inserted in the fringe: %d \n",visitCount, pushCount);
 }
 
+int heuristic(Position goal, State successor){
+    Position pos;
+    getStatePosition(successor,&pos);
+    int distance = abs(goal.x - pos.x) + abs(goal.y - pos.y) + abs(goal.z - pos.z);
+    distance += getStatePathLength(successor);
+    distance *= -1;
+    
+    return distance;
+}
 
 void solveMazeAStar(Maze maze) {
     Direction dir[6]={UP, DOWN, NORTH, EAST, SOUTH, WEST};
@@ -303,16 +310,6 @@ void solveMazeAStar(Maze maze) {
     }
     
     printf("Number of nodes visited: %d Number of nodes inserted in the fringe: %d \n",visitCount, pushCount);
-}
-
-int heuristic(Position goal, State successor){
-    Position pos;
-    getStatePosition(successor,&pos);
-    int distance = abs(goal.x - pos.x) + abs(goal.y - pos.y) + abs(goal.z - pos.z);
-    distance += getStatePathLength(successor);
-    distance *= -1;
-    
-    return distance;
 }
 
 
